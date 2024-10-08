@@ -1,0 +1,18 @@
+set seed: 42
+{'poison_setting': 'clean'}
+Loaded trainer  base
+
+Clean data base path ------ poison_data/llama/sst-2/1/attrbkd/llm_bible/filter
+Clean data base path exist? ------ True
+
+Clean data base path ------ poison_data/llama/sst-2/1/attrbkd/llm_bible/filter
+Clean data base path exist? ------ True
+
+ load train-poison from base path: poison_data/llama/sst-2/1/attrbkd/llm_bible/filter
+
+
+
+ load dev-poison from base path: poison_data/llama/sst-2/1/attrbkd/llm_bible/filter
+
+2100
+<class 'list'>

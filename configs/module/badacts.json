@@ -1,0 +1,10 @@
+{
+    "defender":{
+      "name": "badacts",
+      "victim": "bert",
+      "frr": 0.05,
+      "poison_dataset": "sst-2",
+      "attacker": "badnets",
+      "delta": 2
+  }    
+}

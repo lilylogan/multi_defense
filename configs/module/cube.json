@@ -1,0 +1,11 @@
+{
+      "defender":{
+        "name": "cube",
+        "warm_up_epochs": 0,
+        "epochs": 10,
+        "batch_size": 32,
+        "lr": 2e-5,
+        "num_classes": 2,
+        "model_path": "roberta-base"
+    }
+}

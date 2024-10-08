@@ -1,0 +1,9 @@
+{
+     "defender": {
+      "name": "react",
+      "defense_rate": 0.5,
+      "data": "sst-2",
+      "poisoner": "llmbkd",
+      "rs": 42
+   }
+}

@@ -1,0 +1,61 @@
+{
+   "target_dataset": {
+      "name": "sst-2",
+      "dev_rate": 0.1
+   },
+   "poison_dataset": {
+      "name": "sst-2",
+      "dev_rate": 0.1
+   },
+   "victim": {
+      "type": "plm",
+      "model": "roberta",
+      "path": "roberta-base",
+      "num_classes": 2,
+      "device": "gpu",
+      "max_len": 512
+   },
+   "attacker": {
+      "name": "base",
+      "metrics": [
+         "accuracy"
+      ],
+      "train": {
+         "name": "base",
+         "lr": 2e-05,
+         "weight_decay": 0,
+         "epochs": 5,
+         "batch_size": 32,
+         "warm_up_epochs": 3,
+         "ckpt": "best",
+         "save_path": "./models",
+         "filter": true,
+         "data": "sst-2",
+         "model": "roberta",
+         "defender": "fabe"
+      },
+      "poisoner": {
+         "name": "addsent",
+         "poison_rate": 0.05,
+         "target_label": 1,
+         "label_consistency": true,
+         "label_dirty": false,
+         "load": true,
+         "triggers": "I watch this 3D movie",
+         "filter": true,
+         "model": "roberta",
+         "data": "sst-2",
+         "rs": 0
+      }
+   },
+   "clean-tune": false,
+   "defender": {
+      "name": "fabe",
+      "diversity": 0.1,
+      "pre": true,
+      "model_path": "../tuna/src/checkpoints/tuna_p/checkpoint-3024",
+      "correction": true,
+      "batch_size": 32,
+      "rs": 0
+   }
+}

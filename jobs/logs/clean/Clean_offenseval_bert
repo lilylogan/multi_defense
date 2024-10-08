@@ -1,0 +1,8 @@
+
+Clean data base path ------ ./data/clean/offenseval
+Clean data base path exist? ------ True
+<torch.utils.data.dataloader.DataLoader object at 0x14cbe42acfa0>
+<torch.utils.data.dataloader.DataLoader object at 0x14cbe42acfa0>
+<torch.utils.data.dataloader.DataLoader object at 0x14cbe42acfa0>
+<torch.utils.data.dataloader.DataLoader object at 0x14cbe42acfa0>
+<torch.utils.data.dataloader.DataLoader object at 0x14cbe42acfa0>

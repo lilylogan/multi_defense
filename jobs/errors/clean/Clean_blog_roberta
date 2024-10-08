@@ -1,0 +1,51 @@
+Lmod has detected the following error: Cannot load module "miniconda/20190102"
+because these module(s) are loaded:
+   python3
+
+While processing the following module(s):
+    Module fullname     Module Filename
+    ---------------     ---------------
+    miniconda/20190102  /packages/modulefiles/Core/miniconda/20190102.lua
+
+
+CommandNotFoundError: Your shell has not been properly configured to use 'conda activate'.
+To initialize your shell, run
+
+    $ conda init <SHELL_NAME>
+
+Currently supported shells are:
+  - bash
+  - fish
+  - tcsh
+  - xonsh
+  - zsh
+  - powershell
+
+See 'conda init --help' for more information and options.
+
+IMPORTANT: You may need to close and restart your shell after running 'conda init'.
+
+
+[[032m2024-07-24 23:01:58,940[0m INFO] PyTorch version 2.4.0 available.
+Traceback (most recent call last):
+  File "/gpfs/projects/uoml/llogan3/defense/bkd_defense/scripts/train_clean.py", line 183, in <module>
+    main(args)
+  File "/gpfs/projects/uoml/llogan3/defense/bkd_defense/scripts/train_clean.py", line 109, in main
+    or_dev = pd.read_csv(os.path.join(clean_dir, "dev.csv"))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/packages/miniconda-t2/20230523/envs/python-3.11.4/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 912, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/packages/miniconda-t2/20230523/envs/python-3.11.4/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 577, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/packages/miniconda-t2/20230523/envs/python-3.11.4/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 1407, in __init__
+    self._engine = self._make_engine(f, self.engine)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/packages/miniconda-t2/20230523/envs/python-3.11.4/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 1661, in _make_engine
+    self.handles = get_handle(
+                   ^^^^^^^^^^^
+  File "/packages/miniconda-t2/20230523/envs/python-3.11.4/lib/python3.11/site-packages/pandas/io/common.py", line 859, in get_handle
+    handle = open(
+             ^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: './data/clean/blog/dev.csv'

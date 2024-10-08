@@ -1,0 +1,7 @@
+{
+      "defender":{
+        "name": "onion",
+        "threshold": 0,
+        "batch_size": 32
+    }
+}

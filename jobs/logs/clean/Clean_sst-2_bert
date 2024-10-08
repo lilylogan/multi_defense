@@ -1,0 +1,8 @@
+
+Clean data base path ------ ./data/clean/sst-2
+Clean data base path exist? ------ True
+<torch.utils.data.dataloader.DataLoader object at 0x14a50cb52040>
+<torch.utils.data.dataloader.DataLoader object at 0x14a50cb52040>
+<torch.utils.data.dataloader.DataLoader object at 0x14a50cb52040>
+<torch.utils.data.dataloader.DataLoader object at 0x14a50cb52040>
+<torch.utils.data.dataloader.DataLoader object at 0x14a50cb52040>

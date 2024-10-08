@@ -1,0 +1,37 @@
+The token has not been saved to the git credentials helper. Pass `add_to_git_credential=True` in this function directly or `--add-to-git-credential` if using via `huggingface-cli` if you want to set the git credential as well.
+Token is valid (permission: fineGrained).
+Your token has been saved to /home/llogan3/.cache/huggingface/token
+Login successful
+set seed: 42
+{'poison_setting': 'clean'}
+
+loading SCPN attacker from OA.
+Loaded trainer  base
+clean_data_basepath: poison_data/baselines/hsol/1/synbkd/filter
+
+Clean data base path ------ poison_data/baselines/hsol/1/synbkd/filter
+Clean data base path exist? ------ True
+clean_data_basepath: poison_data/baselines/hsol/1/synbkd/filter
+
+Clean data base path ------ poison_data/baselines/hsol/1/synbkd/filter
+Clean data base path exist? ------ True
+
+ load train-poison from base path: poison_data/baselines/hsol/1/synbkd/filter
+
+
+
+ load dev-poison from base path: poison_data/baselines/hsol/1/synbkd/filter
+
+<torch.utils.data.dataloader.DataLoader object at 0x14d301b60610>
+<torch.utils.data.dataloader.DataLoader object at 0x14d301b60b50>
+<torch.utils.data.dataloader.DataLoader object at 0x14d301b60610>
+<torch.utils.data.dataloader.DataLoader object at 0x14d301b60b50>
+<torch.utils.data.dataloader.DataLoader object at 0x14d301b60610>
+<torch.utils.data.dataloader.DataLoader object at 0x14d301b60b50>
+<torch.utils.data.dataloader.DataLoader object at 0x14d301b60610>
+<torch.utils.data.dataloader.DataLoader object at 0x14d301b60b50>
+<torch.utils.data.dataloader.DataLoader object at 0x14d301b60610>
+<torch.utils.data.dataloader.DataLoader object at 0x14d301b60b50>
+Begin to correct test-clean data.
+Failed to load model: Using `low_cpu_mem_usage=True` or a `device_map` requires Accelerate: `pip install accelerate`
+Tokenizer loaded successfully.

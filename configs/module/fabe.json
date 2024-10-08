@@ -1,0 +1,8 @@
+{
+      "defender":{
+        "name": "fabe",
+        "diversity": 0.1,
+        "model_path": "../tuna/src/checkpoints/tuna_p/checkpoint-3024",
+        "correction": true
+    }    
+}

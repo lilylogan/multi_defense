@@ -1,0 +1,8 @@
+
+Clean data base path ------ ./data/clean/hsol
+Clean data base path exist? ------ True
+<torch.utils.data.dataloader.DataLoader object at 0x14e6e6300130>
+<torch.utils.data.dataloader.DataLoader object at 0x14e6e6300130>
+<torch.utils.data.dataloader.DataLoader object at 0x14e6e6300130>
+<torch.utils.data.dataloader.DataLoader object at 0x14e6e6300130>
+<torch.utils.data.dataloader.DataLoader object at 0x14e6e6300130>

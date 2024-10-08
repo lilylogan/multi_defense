@@ -1,0 +1,15 @@
+{
+        "poisoner": {
+         "name": "stylebkd",
+         "poison_rate": 0.01,
+         "target_label": 1,
+         "label_consistency": true,
+         "label_dirty": false,
+         "load": false,
+         "template_id": 0,
+         "filter": false,
+         "model": "roberta",
+         "data": "sst-2",
+         "rs": 42
+      }
+}

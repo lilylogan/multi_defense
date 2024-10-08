@@ -1,0 +1,9 @@
+clean_data_basepath: ./data/clean/yelp
+
+Clean data base path ------ ./data/clean/yelp
+Clean data base path exist? ------ True
+<torch.utils.data.dataloader.DataLoader object at 0x149a200a0520>
+<torch.utils.data.dataloader.DataLoader object at 0x149a200a0520>
+<torch.utils.data.dataloader.DataLoader object at 0x149a200a0520>
+<torch.utils.data.dataloader.DataLoader object at 0x149a200a0520>
+<torch.utils.data.dataloader.DataLoader object at 0x149a200a0520>

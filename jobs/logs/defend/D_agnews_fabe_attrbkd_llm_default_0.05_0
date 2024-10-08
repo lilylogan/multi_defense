@@ -1,0 +1,18 @@
+set seed: 42
+{'poison_setting': 'clean'}
+Loaded trainer  base
+
+Clean data base path ------ poison_data/llama/agnews/0/attrbkd/llm_default/filter
+Clean data base path exist? ------ True
+
+Clean data base path ------ poison_data/llama/agnews/0/attrbkd/llm_default/filter
+Clean data base path exist? ------ True
+
+ load train-poison from base path: poison_data/llama/agnews/0/attrbkd/llm_default/filter
+
+
+
+ load dev-poison from base path: poison_data/llama/agnews/0/attrbkd/llm_default/filter
+
+2100
+<class 'list'>

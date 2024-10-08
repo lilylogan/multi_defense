@@ -1,0 +1,7 @@
+{'save': False, 'poison_setting': 'clean'}
+Loaded trainer  base
+clean_data_basepath: poison_data/baselines/agnews/0/badnets/filter
+
+Clean data base path ------ poison_data/baselines/agnews/0/badnets/filter
+Clean data base path exist? ------ False
+None

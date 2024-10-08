@@ -1,0 +1,53 @@
+{
+   "target_dataset": {
+      "name": "agnews",
+      "dev_rate": 0.1
+   },
+   "poison_dataset": {
+      "name": "agnews",
+      "dev_rate": 0.1
+   },
+   "victim": {
+      "type": "plm",
+      "model": "roberta",
+      "path": "roberta-base",
+      "num_classes": 4,
+      "device": "gpu",
+      "max_len": 512
+   },
+   "attacker": {
+      "name": "base",
+      "metrics": [
+         "accuracy"
+      ],
+      "train": {
+         "name": "base",
+         "lr": 2e-05,
+         "weight_decay": 0,
+         "epochs": 5,
+         "batch_size": 16,
+         "warm_up_epochs": 3,
+         "ckpt": "best",
+         "save_path": "./models",
+         "filter": true,
+         "data": "agnews",
+         "model": "roberta",
+         "style": "default"
+      },
+      "poisoner": {
+         "name": "llmbkd",
+         "llm": "gpt-4-1106-preview",
+         "style": "default",
+         "poison_rate": 0.01,
+         "target_label": 0,
+         "label_consistency": true,
+         "label_dirty": false,
+         "load": true,
+         "filter": true,
+         "model": "roberta",
+         "data": "agnews",
+         "rs": 10
+      }
+   },
+   "clean-tune": false
+}

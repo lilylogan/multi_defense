@@ -1,0 +1,40 @@
+The token has not been saved to the git credentials helper. Pass `add_to_git_credential=True` in this function directly or `--add-to-git-credential` if using via `huggingface-cli` if you want to set the git credential as well.
+Token is valid (permission: fineGrained).
+Your token has been saved to /home/llogan3/.cache/huggingface/token
+Login successful
+set seed: 42
+{'save': False, 'poison_setting': 'clean'}
+Loaded trainer  base
+
+Clean data base path ------ poison_data/baselines/sst-2/1/badnets/filter
+Clean data base path exist? ------ True
+
+Clean data base path ------ poison_data/baselines/sst-2/1/badnets/filter
+Clean data base path exist? ------ True
+
+ load train-poison from base path: poison_data/baselines/sst-2/1/badnets/filter
+
+
+
+ load dev-poison from base path: poison_data/baselines/sst-2/1/badnets/filter
+
+<torch.utils.data.dataloader.DataLoader object at 0x145c9d15ee80>
+<torch.utils.data.dataloader.DataLoader object at 0x145c9d2471c0>
+<torch.utils.data.dataloader.DataLoader object at 0x145c9d15ee80>
+<torch.utils.data.dataloader.DataLoader object at 0x145c9d2471c0>
+<torch.utils.data.dataloader.DataLoader object at 0x145c9d15ee80>
+<torch.utils.data.dataloader.DataLoader object at 0x145c9d2471c0>
+<torch.utils.data.dataloader.DataLoader object at 0x145c9d15ee80>
+<torch.utils.data.dataloader.DataLoader object at 0x145c9d2471c0>
+<torch.utils.data.dataloader.DataLoader object at 0x145c9d15ee80>
+<torch.utils.data.dataloader.DataLoader object at 0x145c9d2471c0>
+Begin to correct test-clean data.
+Model loaded successfully.
+Tokenizer loaded successfully.
+evaluating
+Begin to correct test-poison data.
+Model loaded successfully.
+Tokenizer loaded successfully.
+evaluating
+<torch.utils.data.dataloader.DataLoader object at 0x145c9dad7400>
+<torch.utils.data.dataloader.DataLoader object at 0x145c9d60eb80>

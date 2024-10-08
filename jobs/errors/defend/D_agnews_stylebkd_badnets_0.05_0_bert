@@ -1,0 +1,8 @@
+whoami: cannot find name for user ID 245795
+whoami: cannot find name for user ID 245795
+whoami: cannot find name for user ID 245795
+whoami: cannot find name for user ID 245795
+Traceback (most recent call last):
+  File "scripts/demo_defend.py", line 50, in <module>
+    with open(args.config_path, 'r') as f:
+FileNotFoundError: [Errno 2] No such file or directory: './configs/agnews/bert/defend/nofilter/D_stylebkd_badnets_0.05_0.json'

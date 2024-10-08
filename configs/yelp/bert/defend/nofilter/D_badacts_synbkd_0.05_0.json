@@ -1,0 +1,62 @@
+{
+   "target_dataset": {
+      "name": "yelp",
+      "dev_rate": 0.1
+   },
+   "poison_dataset": {
+      "name": "yelp",
+      "dev_rate": 0.1
+   },
+   "victim": {
+      "type": "plm",
+      "model": "bert",
+      "path": "bert-base-uncased",
+      "num_classes": 2,
+      "device": "gpu",
+      "max_len": 512
+   },
+   "attacker": {
+      "name": "base",
+      "metrics": [
+         "accuracy"
+      ],
+      "train": {
+         "name": "base",
+         "lr": 2e-05,
+         "weight_decay": 0,
+         "epochs": 5,
+         "batch_size": 32,
+         "warm_up_epochs": 3,
+         "ckpt": "best",
+         "save_path": "./models",
+         "filter": true,
+         "data": "yelp",
+         "model": "bert",
+         "defender": "badacts"
+      },
+      "poisoner": {
+         "name": "synbkd",
+         "poison_rate": 0.05,
+         "target_label": 0,
+         "label_consistency": true,
+         "label_dirty": false,
+         "load": true,
+         "template_id": -1,
+         "filter": true,
+         "data": "yelp",
+         "model": "bert",
+         "rs": 0
+      }
+   },
+   "clean-tune": false,
+   "defender": {
+      "name": "badacts",
+      "victim": "bert",
+      "frr": 0.05,
+      "poison_dataset": "yelp",
+      "attacker": "synbkd",
+      "delta": 2,
+      "batch_size": 32,
+      "rs": 0
+   }
+}

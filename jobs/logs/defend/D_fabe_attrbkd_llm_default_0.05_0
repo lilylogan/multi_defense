@@ -1,0 +1,20 @@
+{'poison_setting': 'clean'}
+Loaded trainer  base
+
+Clean data base path ------ poison_data/llama/agnews/0/attrbkd/llm_default/filter
+Clean data base path exist? ------ True
+{'poison_setting': 'clean'}
+Loaded trainer  base
+
+Clean data base path ------ poison_data/llama/sst-2/1/attrbkd/llm_default/filter
+Clean data base path exist? ------ True
+
+Clean data base path ------ poison_data/llama/sst-2/1/attrbkd/llm_default/filter
+Clean data base path exist? ------ True
+
+ load train-poison from base path: poison_data/llama/sst-2/1/attrbkd/llm_default/filter
+
+
+
+ load dev-poison from base path: poison_data/llama/sst-2/1/attrbkd/llm_default/filter
+

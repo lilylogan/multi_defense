@@ -1,0 +1,20 @@
+set seed: 42
+{'poison_setting': 'clean'}
+
+loading SCPN attacker from OA.
+Loaded trainer  base
+
+Clean data base path ------ poison_data/baselines/sst-2/1/synbkd/filter
+Clean data base path exist? ------ True
+
+Clean data base path ------ poison_data/baselines/sst-2/1/synbkd/filter
+Clean data base path exist? ------ True
+
+ load train-poison from base path: poison_data/baselines/sst-2/1/synbkd/filter
+
+
+
+ load dev-poison from base path: poison_data/baselines/sst-2/1/synbkd/filter
+
+<torch.utils.data.dataloader.DataLoader object at 0x154e7574ed60>
+<torch.utils.data.dataloader.DataLoader object at 0x154e7574e4f0>

@@ -1,0 +1,16 @@
+{
+      "poisoner": {
+         "name": "attrbkd",
+         "llm": "gpt-3.5-turbo",
+         "style": "default",
+         "poison_rate": 0.01,
+         "target_label": 1,
+         "label_consistency": true,
+         "label_dirty": false,
+         "load": true,
+         "filter": false,
+         "model": "roberta",
+         "data": "sst-2",
+         "rs": 42
+      }
+}
