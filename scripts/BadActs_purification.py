@@ -8,6 +8,7 @@ from tqdm import tqdm
 import numpy as np
 import torch.nn as nn
 import torch
+import argparse
 
 torch.cuda.set_device(0)
 import pandas as pd
@@ -35,6 +36,8 @@ device = torch.device('cuda')
 
 
 def main(config):
+
+    # TODO: change seed to parameter
     set_random_seed(2024)
     target_lable = config['attacker']["poisoner"]["target_label"]
     dataset = config['attacker']["train"]["poison_dataset"]
@@ -45,19 +48,57 @@ def main(config):
     victim.device = device
     victim.to(device)
     # print(victim)
-    loaded_backdoored_model_params = torch.load(
-        './models/dirty-{}-{}-{}-{}/best.ckpt'.format(attack_type,
-                                                      config['attacker'][
-                                                          "poisoner"][
-                                                          "poison_rate"],
-                                                      dataset,
-                                                      config["victim"][
-                                                          'model']),
-        map_location=device)
+
+    # loaded_backdoored_model_params = torch.load(
+    #     './models/dirty-{}-{}-{}-{}/best.ckpt'.format(attack_type,
+    #                                                   config['attacker'][
+    #                                                       "poisoner"][
+    #                                                       "poison_rate"],
+    #                                                   dataset,
+    #                                                   config["victim"][
+    #                                                       'model']),
+    #     map_location=device)
+    # victim.load_state_dict(loaded_backdoored_model_params)
+    # victim.eval()
+
+    # # victim.require_grad = False
+     # load victim model weights
+    data = config["target_dataset"]["name"]
+    victim_model = config["victim"]["model"]
+
+    poison_rate = config["attacker"]["poisoner"]["poison_rate"]
+    label_consistency = config["attacker"]["poisoner"]["label_consistency"]
+    if attack_type in ["attrbkd", "llmbkd"]:
+        llm = config["attacker"]["poisoner"]["llm"]
+        style = config["attacker"]["poisoner"]["style"]
+        output_dir = os.path.join('purify_logs', data, victim_model, attack_type, llm, style)
+    else:
+        output_dir = os.path.join('purify_logs', data, victim_model, attack_type)
+
+
+    os.makedirs(output_dir, exist_ok=True)
+    log_file = open(os.path.join(output_dir, 'log.txt'), 'w')
+    # Redirect stdout to the log file
+    sys.stdout = log_file
+    # base_dir = os.path.join('./models', data, "none")
+    # print(base_dir)
+
+    if attack_type == "attrbkd":
+        base_dir = os.path.join("../../attrbkd/bkd/models", data, victim_model, "clean/attack",
+                                "llmbkd", llm, style, "filter", str(poison_rate)) # todo: modify the directory such that it reads from 'attrbkd' folder
+    elif attack_type == "llmbkd":
+        base_dir = os.path.join("../../attrbkd/bkd/models", data, victim_model, "clean/attack", attack_type, llm,
+                                style,
+                                "filter", str(poison_rate))
+    else:
+        base_dir = os.path.join("../../attrbkd/bkd/models", data, victim_model, "clean/attack/", attack_type, "filter", str(poison_rate))
+
+
+    sub_dirs = os.listdir(base_dir)
+    model_dir = max(sub_dirs)
+    loaded_backdoored_model_params = torch.load(os.path.join(base_dir, model_dir, 'best.ckpt'))
     victim.load_state_dict(loaded_backdoored_model_params)
     victim.eval()
-
-    # victim.require_grad = False
 
     def process(batch):
         text = batch["text"]
@@ -78,6 +119,7 @@ def main(config):
             predict = []
             gt_label = []
             ps_label = []
+            tgt_label = []
             for step_, batch_ in tqdm(enumerate(dataloader)):
                 # print(step_)
                 batch_inputs_, batch_labels_ = Net_.model.process(batch_)
@@ -90,14 +132,23 @@ def main(config):
                     predict.extend(pred.squeeze().detach().cpu().numpy().tolist())
                 gt_label.extend(batch_["label"])
                 ps_label.extend(batch_["poison_label"])
+                tgt_label.extend(len(pred) * [target_label])
                 # time.sleep(0.003)
 
-            return accuracy_score(gt_label, predict), accuracy_score(ps_label, predict)
+            return accuracy_score(gt_label, predict), accuracy_score(tgt_label, predict)
 
     # load clean dev set
+    # clean_dev_data = []
+    # clean_dev_set_path = './poison_data/{}/{}/{}/dev-clean.csv'.format(
+    #     dataset, target_lable, attack_type)
+    # benign_texts = pd.read_csv(clean_dev_set_path)
     clean_dev_data = []
-    clean_dev_set_path = './poison_data/{}/{}/{}/dev-clean.csv'.format(
-        dataset, target_lable, attack_type)
+    if attack_type in ["attrbkd", "llmbkd"]:
+        clean_dev_set_path = os.path.join('../meta_poison_data/', llm, data, str(target_label),
+                                      attack_type, style, 'filter', 'dev-clean.csv')
+    else:
+        clean_dev_set_path = os.path.join('../meta_poison_data/baselines', data, str(target_label),
+                                          attack_type, 'filter', 'dev-clean.csv')
     benign_texts = pd.read_csv(clean_dev_set_path)
 
     dev_total = 0
@@ -161,9 +212,17 @@ def main(config):
     Num_layers = 12
     Clean_Net = CleanNet(victim, num_layers=Num_layers).to(device)
     batch_size = 32
-    trainloader = get_dataloader(clean_dev_data, batch_size, shuffle=True)
+    # trainloader = get_dataloader(clean_dev_data, batch_size, shuffle=True)
 
-    acc, _ = Security_inference(Clean_Net, clean_dev_data)
+
+    random.shuffle(clean_dev_data)
+    split_idx = int(len(clean_dev_data) * 0.8)
+    clean_dev_train = clean_dev_data[:split_idx]
+    clean_dev_test = clean_dev_data[split_idx:]
+    trainloader = get_dataloader(clean_dev_train, batch_size, shuffle=True)
+
+    # acc, _ = Security_inference(Clean_Net, clean_dev_data)
+    acc, _ = Security_inference(Clean_Net, clean_dev_test, target_label)
     print('Learning Before Acc: {:.4f} '.format(acc * 100.))
 
     def learning_bound(c, a):
@@ -187,7 +246,9 @@ def main(config):
 
                 # print('loss {:.4f}   norm  {:.4f}'.format(loss1.item(), loss2.item()))
 
-            acc_after, _ = Security_inference(Clean_Net, clean_dev_data)
+            # acc_after, _ = Security_inference(Clean_Net, clean_dev_data)
+            acc_after, _ = Security_inference(Clean_Net, clean_dev_test, target_label)
+
             acc_after = acc_after * 100.
 
             if epoch > 10 and epoch % 5 == 0:
@@ -208,7 +269,12 @@ def main(config):
         Clean_Net.bound_init()
         dev_cacc = learning_bound(c, a)
 
-    folder_name = './bounds/' + str(dataset) + '-' + str(attack_type) + '/'
+    # folder_name = './bounds/' + str(dataset) + '-' + str(attack_type) + '/'
+    if attack_type in ["llmbkd", "attrbkd"]:
+        folder_name = os.path.join('./bounds', str(dataset), str(victim_model), str(attack_type), str(style))
+    else:
+        folder_name = os.path.join('./bounds', str(dataset), str(victim_model), str(attack_type))
+
     os.makedirs(folder_name, exist_ok=True)
     torch.save(Clean_Net.up_bound.detach().cpu(), folder_name + 'up_bound.pt')
     torch.save(Clean_Net.margin.detach().cpu(), folder_name + 'margin.pt')
@@ -216,27 +282,75 @@ def main(config):
     # load clean test set
     poison_gt = []
     clean_test_set = []
-    clean_test_path = './poison_data/{}/{}/{}/test-clean.csv'.format(
-        dataset, target_lable, attack_type)
+    # clean_test_path = './poison_data/{}/{}/{}/test-clean.csv'.format(
+    #     dataset, target_lable, attack_type)
+    if attack_type in ["attrbkd", "llmbkd"]:
+        clean_test_path = os.path.join('../meta_poison_data/', llm, data, str(target_label),
+                                      attack_type, style, 'filter', 'test-clean.csv')
+    else:
+        clean_test_path = os.path.join('../meta_poison_data/baselines', data, str(target_label),
+                                          attack_type, 'filter', 'test-clean.csv')
+
     clean_test_texts = pd.read_csv(clean_test_path)
+    # for _, t, l, _ in clean_test_texts.values:
+    #     clean_test_set.append([t, l, target_lable])
+    #     if l != target_lable:
+    #         poison_gt.append(l)
+
     for _, t, l, _ in clean_test_texts.values:
-        clean_test_set.append([t, l, target_lable])
-        if l != target_lable:
+        clean_test_set.append([t, l, target_label])
+        if dataset != 'sst-2':
+            if l != target_label:
+                poison_gt.append(l)
+        else:
             poison_gt.append(l)
 
     # load poison test set
     poison_test_set = []
-    poison_test_path = './poison_data/{}/{}/{}/test-poison.csv'.format(
-        dataset, target_lable, attack_type)
-    poison_texts = pd.read_csv(poison_test_path)
-    for i, (_, t, l, _) in enumerate(poison_texts.values):
-        poison_test_set.append([t, poison_gt[i], target_lable])
+    # poison_test_path = './poison_data/{}/{}/{}/test-poison.csv'.format(
+    #     dataset, target_lable, attack_type)
 
-    Clean_ACC, _ = Security_inference(Clean_Net, clean_test_set)
-    Poison_ACC, Poison_ASR = Security_inference(Clean_Net, poison_test_set)
-    print('Dataset: ' + str(dataset) + '  Attack: ' + str(attack_type))
-    print('Clean ACC {:.4f}  Posion ACC {:.4f}  ASR {:.4f} '.format(Clean_ACC, Poison_ACC,
+    if attack_type in ["attrbkd", "llmbkd"]:
+        poison_test_path = os.path.join('../meta_poison_data/', llm, data, str(target_label),
+                                      attack_type, style, 'test-poison.csv')
+    else:
+        poison_test_path = os.path.join('../meta_poison_data/baselines', data, str(target_label),
+                                          attack_type, 'filter', 'test-poison.csv')
+
+    poison_texts = pd.read_csv(poison_test_path)
+    poison_texts = poison_texts.dropna()
+
+    if label_consistency is True:
+        for i, (_, t, l, ps) in enumerate(poison_texts.values):
+            # print("\n\n------- t, poison_gt[i], target_label---", t, poison_gt[i], target_label)
+            poison_test_set.append([t, l, ps])
+    else:
+        for i, (_, t, l, _) in enumerate(poison_texts.values):
+            # print("\n\n------- t, poison_gt[i], target_label---", t, poison_gt[i], target_label)
+            poison_test_set.append([t, poison_gt[i], target_label])
+
+    print("Inference on clean-test...")
+    Clean_ACC, _ = Security_inference(Clean_Net, clean_test_set, target_label)
+    print("Inference on poison-test...")
+    Poison_ACC, Poison_ASR = Security_inference(Clean_Net, poison_test_set, target_label)
+    if attack_type in ['llmbkd', 'attrbkd']:
+        print('Dataset: ' + str(dataset) + '  Attack: ' + str(attack_type) + '  Variant: ' + str(style))
+    else:
+        print('Dataset: ' + str(dataset) + '  Attack: ' + str(attack_type))
+    print('Clean ACC {:.3f}  Posion ACC {:.3f}  ASR {:.3f} '.format(Clean_ACC, Poison_ACC,
                                                                     Poison_ASR))
+
+
+    log_file.close()
+
+    # for i, (_, t, l, _) in enumerate(poison_texts.values):
+    #     poison_test_set.append([t, poison_gt[i], target_lable])
+
+    # Clean_ACC, _ = Security_inference(Clean_Net, clean_test_set)
+    # Poison_ACC, Poison_ASR = Security_inference(Clean_Net, poison_test_set)
+    # print('Dataset: ' + str(dataset) + '  Attack: ' + str(attack_type))
+    # print('Clean ACC {:.4f}  Posion ACC {:.4f}  ASR {:.4f} '.format(Clean_ACC, Poison_ACC,
+    #                                                                 Poison_ASR))
 
     # with open('./purify_result/feature_clip.txt', 'a') as txt_file:
     #     txt_file.write('Dataset: ' + str(dataset) + '  Attack: ' + str(attack_type))
@@ -245,36 +359,48 @@ def main(config):
     #                                                                              100. * Poison_ASR))
     #     txt_file.write('\n')
 
-
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config_path', type=str, default='./configs/base_config.json')
+    args = parser.parse_args()
+    return args
+    
 if __name__ == '__main__':
-    for config_path in ['./configs/badnets_config.json' ]:
-        with open(config_path, 'r') as f:
-            config = json.load(f)
+    args = parse_args()
+    config_path = args.config_path
+    with open(config_path, 'r') as f:
+        config = json.load(f)
 
-        for model_, path_ in [('bert', "bert-base-uncased")]:
+    config = set_config(config)
+    main(config)
+    # for config_path in ['./configs/badnets_config.json' ]:
+    #     with open(config_path, 'r') as f:
+    #         config = json.load(f)
 
-            config["victim"]['model'] = model_
-            config["victim"]['path'] = path_
+    #     for model_, path_ in [('bert', "bert-base-uncased")]:
 
-            for dataset_ in ['sst-2']:
-                config["attacker"]['train']["epochs"] = 5
-                config['poison_dataset']['name'] = dataset_
-                config['target_dataset']['name'] = dataset_
-                config['attacker']["poisoner"]["poison_rate"] = 0.2
-                config['attacker']["train"]["poison_dataset"] = dataset_
-                config['attacker']["train"]["poison_model"] = model_
-                config['attacker']["poisoner"]["target_label"] = 0
-                if dataset_ in ['yelp', 'sst-2']:
-                    config['attacker']["poisoner"]["target_label"] = 1
+    #         config["victim"]['model'] = model_
+    #         config["victim"]['path'] = path_
 
-                config['attacker']['poisoner']['load'] = True
-                # config['attacker']['sample_metrics'] = ['ppl', 'grammar', 'use']
-                config['attacker']["train"]["batch_size"] = 16
-                config['victim']['num_classes'] = 2
+    #         for dataset_ in ['sst-2']:
+    #             config["attacker"]['train']["epochs"] = 5
+    #             config['poison_dataset']['name'] = dataset_
+    #             config['target_dataset']['name'] = dataset_
+    #             config['attacker']["poisoner"]["poison_rate"] = 0.2
+    #             config['attacker']["train"]["poison_dataset"] = dataset_
+    #             config['attacker']["train"]["poison_model"] = model_
+    #             config['attacker']["poisoner"]["target_label"] = 0
+    #             if dataset_ in ['yelp', 'sst-2']:
+    #                 config['attacker']["poisoner"]["target_label"] = 1
 
-                if dataset_ == 'agnews':
-                    config['victim']['num_classes'] = 4
-                    config['attacker']["train"]["batch_size"] = 8
+    #             config['attacker']['poisoner']['load'] = True
+    #             # config['attacker']['sample_metrics'] = ['ppl', 'grammar', 'use']
+    #             config['attacker']["train"]["batch_size"] = 16
+    #             config['victim']['num_classes'] = 2
 
-                config = set_config(config)
-                main(config)
+    #             if dataset_ == 'agnews':
+    #                 config['victim']['num_classes'] = 4
+    #                 config['attacker']["train"]["batch_size"] = 8
+
+    #             config = set_config(config)
+    #             main(config)

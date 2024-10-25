@@ -49,3 +49,6 @@
 #./jobs/attack/primer.sh 'agnews' 'roberta' 'filter' 'synbkd' '' '' ''
 
 
+# BadActs
+# data model filter poisoner rs pr llm style
+./jobs/attack/primer.sh 'sst-2' 'roberta' 'nofilter' 'badnets' '' '' '' 
